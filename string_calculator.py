@@ -1,16 +1,55 @@
+import re
+
+
 class StringCalculator:
-    def get_delimiters(self, numbers: str) -> str:
+    def __init__(self, numbers: str):
+        self.numbers = numbers
+
+    def get_delimiters(self) -> str:
         """
         Extract delimiters from the given string
-        :param numbers: string with delimiters and actual numbers to be added
         :return: delimiter string
         """
-        pass
+        # Check if custom delimiter is present
+        if self.numbers.startswith('//'):
+            # Split into delimiter and numbers
+            delimiter_part, numbers_part = self.numbers.split('\n', 1)
 
-    def add(self, numbers: str) -> int:
+            # Extract delimiters, supporting multiple delimiters of any length
+            custom_delimiters = re.findall(r'\[(.*?)\]', delimiter_part)
+
+            if not custom_delimiters:
+                custom_delimiter = delimiter_part[2:]  # Fallback for a single character
+                custom_delimiters = [custom_delimiter]
+
+            # Join delimiters and add escape character to avoid matching regex issue
+            delimiter = '|'.join(map(re.escape, custom_delimiters))
+            self.numbers = numbers_part  # The rest of the numbers remain unchanged
+        else:
+            # Default delimiter is a comma
+            delimiter = ','
+        return delimiter
+
+    def add(self) -> int:
         """
         Adds all given numbers
-        :param numbers: string with delimiters and actual numbers to be added
         :return: total of given numbers
         """
-        pass
+        if not self.numbers:
+            return 0
+
+        delimiter = self.get_delimiters()
+
+        # Replace newline with comma
+        self.numbers = self.numbers.replace('\n', ',')
+
+        # Split the string using regex for multiple delimiters
+        nums_list = [int(num) for num in re.split(delimiter, self.numbers) if num]
+
+        return sum(nums_list)
+
+
+if __name__ == '__main__':
+    numbers_list = ["1\n2,3", "//;\n1;2", "//[***]\n1***2***3", "//[*][%]\n1*2%3"]
+    for numbers in numbers_list:
+        print(StringCalculator(numbers).add())
