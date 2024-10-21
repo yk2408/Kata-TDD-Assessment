@@ -39,6 +39,18 @@ class TestStringCalculator(unittest.TestCase):
         # Multiple long delimiters "$$", "^^"
         self.assertEqual(StringCalculator("//[$$][^^]\n1$$2^^3").add(), 6)
 
+    def test_negative_numbers(self):
+        with self.assertRaises(ValueError) as context:
+            StringCalculator("-1,-2,3").add()
+        self.assertEqual(str(context.exception), "negative numbers not allowed: -1, -2")
+
+    # Test for ignoring large numbers
+    def test_ignore_large_numbers(self):
+        calc1 = StringCalculator("2,2001")
+        self.assertEqual(calc1.add(), 2)  # Should ignore 1001
+        calc2 = StringCalculator("1000,3011,2020,5")
+        self.assertEqual(calc2.add(), 1005)  # Only 1000 and 5 should be summed
+
 
 if __name__ == '__main__':
     unittest.main()
