@@ -51,10 +51,13 @@ class StringCalculator:
         if negative_nums:
             raise ValueError(f"negative numbers not allowed: {negative_nums}")
 
+        # skip numbers greater than 1000
+        nums_list = [num for num in nums_list if num <= 1000]
+
         return sum(nums_list)
 
 
 if __name__ == '__main__':
-    numbers_list = ["1\n2,3", "//;\n1;2", "//[***]\n1***2***3", "//[*][%]\n1*2%3", "-11,2,-100"]
+    numbers_list = ["1\n2,3", "//;\n1;2", "//[***]\n1***2***3", "//[*][%]\n1*2%3", "1001,2", "-11,2,-100"]
     for numbers in numbers_list:
         print(StringCalculator(numbers).add())
